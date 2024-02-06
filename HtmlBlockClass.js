@@ -1,4 +1,4 @@
-class HtmlElementClass {
+class HtmlBlock {
   getColor(name = "gray") {
     const colors = {
       blue: "#00f",
