@@ -7,7 +7,7 @@ class App {
     console.log("HTML Architect app has been started!");
 
     this.pure = new Pure();
-    this.html = new HtmlElementClass();
+    this.html = new HtmlBlock();
 
     window.addEventListener("click", () => {
       this.pure.cleanSelectedElement();
