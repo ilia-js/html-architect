@@ -1,4 +1,4 @@
-class MyHtmlElement {
+class HtmlElementClass {
   getColor(name = "gray") {
     const colors = {
       blue: "#00f",
