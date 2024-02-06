@@ -1,39 +1,36 @@
 class App {
   pure;
   tools = document.getElementById("tools");
+  html;
 
   constructor() {
     console.log("PURE JS!");
 
     this.pure = new Pure();
+    this.html = new MyHtmlElement();
+
     this.addButtonCreate();
     this.addButtonDelete();
   }
 
   addButtonCreate() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = "Create HTML Element";
-    button.style.marginBottom = "20px";
-    button.style.display = "block";
-
-    button.addEventListener("click", () => {
-      this.pure.createElement("div");
-    });
+    const button = this.html.createButton(
+      { text: "Create HTML Element", color: "green" },
+      () => {
+        this.pure.createElement("div");
+      }
+    );
 
     tools.appendChild(button);
   }
 
   addButtonDelete() {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = "Delete HTML Element";
-    button.style.marginBottom = "20px";
-    button.style.display = "block";
-
-    button.addEventListener("click", () => {
-      this.pure.deleteSelectedElement();
-    });
+    const button = this.html.createButton(
+      { text: "Delete HTML Element", color: "red" },
+      () => {
+        this.pure.deleteSelectedElement();
+      }
+    );
 
     tools.appendChild(button);
   }

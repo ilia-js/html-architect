@@ -23,7 +23,8 @@ class Pure {
 
     if (this.selectedElementId) {
       el.style.border = selectionBorderStyle;
-      document.getElementById(this.selectedElementId).style.border = "";
+      document.getElementById(this.selectedElementId).style.border =
+        defaultBoxBorder;
       this.selectedElementId = el.id;
       return;
     }
@@ -36,11 +37,20 @@ class Pure {
 
     el.innerHTML = `${el.id}`;
 
-    el.style.display = "inline";
-    el.style.fontSize = "2rem";
-    el.style.padding = "10px";
-    el.style.cursor = "pointer";
-    el.style.boxSizing = "border-box"; // TODO
+    Object.assign(el.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "3rem",
+      padding: "10px",
+      border: defaultBoxBorder,
+      marginRight: "10px",
+      marginBottom: "10px",
+      width: "100px",
+      height: "100px",
+      cursor: "pointer",
+      boxSizing: "border-box",
+    });
 
     space.appendChild(el);
 
