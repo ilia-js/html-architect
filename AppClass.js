@@ -11,7 +11,6 @@ class App {
 
     window.addEventListener("click", () => {
       this.pure.cleanSelectedElement();
-      console.log("WINDOW CLICK");
     });
 
     this.addButtonCreate();

@@ -35,14 +35,14 @@ class Pure {
   }
 
   createElement(tagName) {
-    const el = document.createElement(tagName);
+    const box = document.createElement(tagName);
 
-    el.id = this.maxElementId++;
+    box.id = this.maxElementId++;
 
     // TODO Uncomment if some inner text is needed.
-    //el.innerHTML = `${el.id}`;
+    //el.innerHTML = `${box.id}`;
 
-    Object.assign(el.style, {
+    Object.assign(box.style, {
       display: "flex",
       flexWrap: "wrap",
       alignItems: "center",
@@ -56,19 +56,20 @@ class Pure {
       height: "200px",
       cursor: "pointer",
       boxSizing: "border-box",
+      overflow: "auto",
     });
 
     if (this.selectedElement) {
-      el.style.width = "30px";
-      el.style.height = "30px";
+      box.style.width = "30px";
+      box.style.height = "30px";
     }
 
     const parent = this.selectedElement ?? space;
 
-    parent.appendChild(el);
+    parent.appendChild(box);
 
-    el.addEventListener("click", (event) => {
-      this.processClick(el);
+    box.addEventListener("click", (event) => {
+      this.processClick(box);
       event.stopPropagation();
     });
   }
