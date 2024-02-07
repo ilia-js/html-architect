@@ -1,16 +1,16 @@
 class App {
-  pure;
+  htmlArchitect;
   tools = document.getElementById("tools");
   html;
 
   constructor() {
     console.log("HTML Architect app has been started!");
 
-    this.pure = new Pure();
+    this.htmlArchitect = new HtmlArchitect();
     this.html = new HtmlBlock();
 
     window.addEventListener("click", () => {
-      this.pure.cleanSelectedElement();
+      this.htmlArchitect.unselectAll();
     });
 
     this.addButtonCreate();
@@ -21,7 +21,7 @@ class App {
     const button = this.html.createButton(
       { text: "Create HTML Element", color: "green" },
       (event) => {
-        this.pure.createElement("div");
+        this.htmlArchitect.createElements();
         event.stopPropagation();
       }
     );
@@ -33,7 +33,7 @@ class App {
     const button = this.html.createButton(
       { text: "Delete HTML Element", color: "red" },
       (event) => {
-        this.pure.deleteSelectedElement();
+        this.htmlArchitect.deleteSelectedElements();
         event.stopPropagation();
       }
     );
