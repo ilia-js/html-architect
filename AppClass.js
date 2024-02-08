@@ -1,10 +1,16 @@
 class App {
   htmlArchitect;
-  tools = document.getElementById("tools");
+  tools;
+  toolsLeft;
+  toolsRight;
   html;
 
   constructor() {
     console.log("HTML Architect app has been started!");
+
+    this.tools = document.getElementById("tools");
+    this.toolsLeft = document.getElementById("toolsLeft");
+    this.toolsRight = document.getElementById("toolsRight");
 
     this.htmlArchitect = new HtmlArchitect();
     this.html = new HtmlBlock();
@@ -13,8 +19,13 @@ class App {
       this.htmlArchitect.unselectAll();
     });
 
+    this.tools.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
     this.addButtonCreate();
     this.addButtonDelete();
+    this.addInputField();
   }
 
   addButtonCreate(event) {
@@ -26,7 +37,7 @@ class App {
       }
     );
 
-    tools.appendChild(button);
+    this.toolsLeft.appendChild(button);
   }
 
   addButtonDelete() {
@@ -38,6 +49,27 @@ class App {
       }
     );
 
-    tools.appendChild(button);
+    this.toolsLeft.appendChild(button);
+  }
+
+  addInputField() {
+    const input = this.html.createInputField(
+      {
+        name: "backgroundColor",
+        value: "",
+        label: "Background Color",
+      },
+
+      (val) => {
+        const selectedElements = this.htmlArchitect.selectedElements;
+
+        selectedElements.forEach((item) => {
+          console.log(item);
+          item.style.backgroundColor = val.target.value;
+        });
+      }
+    );
+
+    this.toolsRight.appendChild(input);
   }
 }

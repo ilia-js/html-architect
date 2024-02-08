@@ -30,4 +30,36 @@ class HtmlBlock {
 
     return button;
   }
+
+  createInputField(config, onChange) {
+    const div = document.createElement("div");
+    const input = document.createElement("input");
+
+    input.type = config.type ?? "text";
+
+    if (config.id) {
+      input.id = config.id;
+    }
+
+    if (config.name) {
+      input.name = config.name;
+    }
+
+    if (config.value) {
+      input.value = config.value;
+    }
+
+    input.addEventListener("change", onChange);
+
+    if (config.label) {
+      const label = document.createElement("label");
+      label.for = config.id;
+      label.innerHTML = `${config.label}: `;
+      div.appendChild(label);
+    }
+
+    div.appendChild(input);
+
+    return div;
+  }
 }
