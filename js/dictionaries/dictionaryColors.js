@@ -1,18 +1,18 @@
 const dictionaryColors = [
   {
-    name: "black",
-    hex: "#000",
+    label: "black",
+    value: "#000",
   },
   {
-    name: "white",
-    hex: "#fff",
+    label: "white",
+    value: "#fff",
   },
   {
-    name: "red",
-    hex: "#f00",
+    label: "red",
+    value: "#f00",
   },
   {
-    name: "orange",
-    hex: "#ff8200",
+    label: "orange",
+    value: "#ff8200",
   },
 ];

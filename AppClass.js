@@ -63,6 +63,13 @@ class App {
           label: value.label,
         });
       }
+
+      if (value.type === cssSettingType.selector) {
+        this.addSelectField({
+          name,
+          ...value,
+        });
+      }
     });
   }
 
@@ -84,5 +91,31 @@ class App {
     );
 
     this.toolsRight.appendChild(input);
+  }
+
+  addSelectField(config) {
+    const params = {
+      label: config.label,
+      name: config.name,
+      value: config.defaultValue,
+      options: [
+        { label: "undefined", value: "white" },
+        ...config.dictionary.options,
+      ],
+    };
+
+    const field = this.html.createSelectField(
+      params,
+
+      (event) => {
+        const selectedElements = this.htmlArchitect.selectedElements;
+
+        selectedElements.forEach((item) => {
+          item.style[config.name] = event.target.value;
+        });
+      }
+    );
+
+    this.toolsRight.appendChild(field);
   }
 }

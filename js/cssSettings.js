@@ -5,7 +5,7 @@ const cssSettingType = {
 
 const cssSettings = {
   backgroundColor: {
-    type: cssSettingType.inputText, // TODO
+    type: cssSettingType.selector,
     dictionary: dictionaries.colors,
     label: "Background color",
   },

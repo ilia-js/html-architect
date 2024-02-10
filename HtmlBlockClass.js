@@ -31,34 +31,75 @@ class HtmlBlock {
     return button;
   }
 
+  createLabel(text, fieldId, parent) {
+    if (!text) {
+      console.error("Error: text for label is undefined");
+      return;
+    }
+
+    const label = document.createElement("label");
+    label.for = fieldId;
+    label.innerHTML = `${text}: `;
+    parent.appendChild(label);
+  }
+
   createInputField(config, onChange) {
     const div = document.createElement("div");
-    const input = document.createElement("input");
+    const field = document.createElement("input");
 
-    input.type = config.type ?? "text";
+    field.type = config.type ?? "text";
 
     if (config.id) {
-      input.id = config.id;
+      field.id = config.id;
     }
 
     if (config.name) {
-      input.name = config.name;
+      field.name = config.name;
     }
 
     if (config.value) {
-      input.value = config.value;
+      field.value = config.value;
     }
 
-    input.addEventListener("change", onChange);
+    field.addEventListener("change", onChange);
 
-    if (config.label) {
-      const label = document.createElement("label");
-      label.for = config.id;
-      label.innerHTML = `${config.label}: `;
-      div.appendChild(label);
+    this.createLabel(config.label, config.id, div);
+
+    div.appendChild(field);
+
+    return div;
+  }
+
+  createSelectField(config, onChange) {
+    const div = document.createElement("div");
+    const field = document.createElement("select");
+
+    if (config.id) {
+      field.id = config.id;
     }
 
-    div.appendChild(input);
+    if (config.name) {
+      field.name = config.name;
+    }
+
+    if (config.value) {
+      field.value = config.value;
+    }
+
+    console.log("CONFIG", config, "CONFIG");
+
+    field.addEventListener("change", onChange);
+
+    this.createLabel(config.label, config.id, div);
+
+    config.options.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item.value;
+      option.innerHTML = item.label;
+      field.appendChild(option);
+    });
+
+    div.appendChild(field);
 
     return div;
   }
