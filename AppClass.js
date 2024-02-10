@@ -25,7 +25,8 @@ class App {
 
     this.addButtonCreate();
     this.addButtonDelete();
-    this.addInputField();
+
+    this.addFields();
   }
 
   addButtonCreate(event) {
@@ -52,20 +53,32 @@ class App {
     this.toolsLeft.appendChild(button);
   }
 
-  addInputField() {
+  addFields() {
+    Object.entries(cssSettings).forEach(([name, value]) => {
+      console.log(name, value);
+      if (value.type === cssSettingType.inputText) {
+        this.addInputField({
+          name,
+          defaultValue: "",
+          label: value.label,
+        });
+      }
+    });
+  }
+
+  addInputField(config) {
     const input = this.html.createInputField(
       {
-        name: "backgroundColor",
-        value: "",
-        label: "Background Color",
+        name: config.name,
+        value: config.defaultValue,
+        label: config.label,
       },
 
       (val) => {
         const selectedElements = this.htmlArchitect.selectedElements;
 
         selectedElements.forEach((item) => {
-          console.log(item);
-          item.style.backgroundColor = val.target.value;
+          item.style[config.name] = val.target.value;
         });
       }
     );
