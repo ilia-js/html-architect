@@ -1,8 +1,8 @@
 class HtmlArchitect {
-  maxElementId = 0;
   selectedElements = [];
   id = 0;
   space = document.getElementById("space");
+  scheme = [];
 
   processClick(el) {
     // TODO: Let's use it but from element's panel.
@@ -46,16 +46,18 @@ class HtmlArchitect {
   }
 
   createElement(parent) {
+    this.id++;
+
     const tagName = "div";
 
     const box = document.createElement(tagName);
 
-    box.id = this.maxElementId++;
+    box.id = this.id;
 
     // TODO Uncomment if some inner text is needed.
     //box.innerHTML = `${box.id}`;
 
-    Object.assign(box.style, {
+    const style = {
       display: "flex",
       flexWrap: "wrap",
       alignItems: "center",
@@ -70,7 +72,9 @@ class HtmlArchitect {
       cursor: "pointer",
       boxSizing: "border-box",
       overflow: "auto",
-    });
+    };
+
+    Object.assign(box.style, style);
 
     // HARDCODE!!!
     if (this.selectedElements.length) {
@@ -84,11 +88,31 @@ class HtmlArchitect {
       this.processClick(box);
       event.stopPropagation();
     });
+
+    const schemeEl = {
+      tag: tagName,
+      id: this.id,
+      style,
+    };
+
+    this.scheme.push(schemeEl);
+
+    console.log(this.scheme);
   }
 
   deleteSelectedElements() {
     this.selectedElements.forEach((item) => {
       item.remove();
+
+      const schemeElIndex = this.scheme.findIndex(
+        (el) => el.id.toString() === item.id
+      );
+
+      if (!this.scheme.splice(schemeElIndex, 1).length) {
+        console.error(
+          `Error: element with index ${schemeElIndex} was not found in scheme when try to delete`
+        );
+      }
     });
 
     this.selectedElements = [];

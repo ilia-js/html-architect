@@ -21,4 +21,8 @@ const cssSettings = {
     type: cssSettingType.inputText,
     label: "Rotate",
   },
+  marginLeft: {
+    type: cssSettingType.inputText,
+    label: "Margin Left",
+  },
 };
