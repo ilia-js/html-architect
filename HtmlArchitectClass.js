@@ -1,7 +1,7 @@
 class HtmlArchitect {
   selectedElements = [];
   id = 0;
-  space = document.getElementById("space");
+  root = document.getElementById(rootId);
   scheme = [];
 
   processClick(el) {
@@ -13,17 +13,15 @@ class HtmlArchitect {
     }
 
     const findIndex = this.selectedElements.findIndex(
-      (item) => item.id === el.id
+      (item) => item.id === el.id,
     );
 
     if (findIndex === -1) {
       el.style.border = selectionBorderStyle;
       this.selectedElements.push(el);
-      return;
     } else {
       this.selectedElements[findIndex].style.border = defaultBoxBorder;
       this.selectedElements.splice(findIndex, 1);
-      return;
     }
   }
 
@@ -38,7 +36,7 @@ class HtmlArchitect {
   createElements() {
     const parents = this.selectedElements.length
       ? this.selectedElements
-      : [space];
+      : [this.root];
 
     parents.forEach((parent) => {
       this.createElement(parent);
@@ -76,7 +74,7 @@ class HtmlArchitect {
 
     Object.assign(box.style, style);
 
-    // HARDCODE!!!
+    // TODO HARDCODE!!!
     if (this.selectedElements.length) {
       box.style.width = "30px";
       box.style.height = "30px";
@@ -92,6 +90,7 @@ class HtmlArchitect {
     const schemeEl = {
       tag: tagName,
       id: this.id,
+      parentId: parent.id === rootId ? 0 : Number(parent.id),
       style,
     };
 
@@ -102,19 +101,30 @@ class HtmlArchitect {
 
   deleteSelectedElements() {
     this.selectedElements.forEach((item) => {
+      this.deleteSchemeElementById(item.id);
+      this.deleteAllSchemeChildren(item.id);
       item.remove();
-
-      const schemeElIndex = this.scheme.findIndex(
-        (el) => el.id.toString() === item.id
-      );
-
-      if (!this.scheme.splice(schemeElIndex, 1).length) {
-        console.error(
-          `Error: element with index ${schemeElIndex} was not found in scheme when try to delete`
-        );
-      }
     });
 
     this.selectedElements = [];
+  }
+
+  deleteSchemeElementById(id) {
+    const index = this.scheme.findIndex((el) => el.id === Number(id));
+    this.scheme.splice(index, 1);
+  }
+
+  deleteAllSchemeChildren(parentId) {
+    parentId = Number(parentId);
+
+    const idsToDelete = [];
+
+    this.scheme.forEach((item) => {
+      if (item.parentId === parentId) {
+        idsToDelete.push(item.id);
+      }
+    });
+
+    idsToDelete.forEach((id) => this.deleteSchemeElementById(id));
   }
 }
