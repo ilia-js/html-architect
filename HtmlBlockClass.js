@@ -86,8 +86,6 @@ class HtmlBlock {
       field.value = config.value;
     }
 
-    console.log("CONFIG", config, "CONFIG");
-
     field.addEventListener("change", onChange);
 
     this.createLabel(config.label, config.id, div);

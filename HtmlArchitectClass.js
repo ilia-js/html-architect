@@ -1,8 +1,14 @@
 class HtmlArchitect {
   selectedElements = [];
   id = 0;
-  root = document.getElementById(rootId);
+  root = undefined;
   scheme = [];
+
+  constructor() {
+    this.root = document.getElementById(rootId);
+    this.loadScheme();
+    console.log("LOADED SCHEME", this.scheme);
+  }
 
   processClick(el) {
     // TODO: Let's use it but from element's panel.
@@ -41,6 +47,8 @@ class HtmlArchitect {
     parents.forEach((parent) => {
       this.createElement(parent);
     });
+
+    this.saveScheme();
   }
 
   createElement(parent) {
@@ -72,13 +80,13 @@ class HtmlArchitect {
       overflow: "auto",
     };
 
-    Object.assign(box.style, style);
-
     // TODO HARDCODE!!!
     if (this.selectedElements.length) {
-      box.style.width = "30px";
-      box.style.height = "30px";
+      style.width = "30px";
+      style.height = "30px";
     }
+
+    Object.assign(box.style, style);
 
     parent.appendChild(box);
 
@@ -95,8 +103,6 @@ class HtmlArchitect {
     };
 
     this.scheme.push(schemeEl);
-
-    console.log(this.scheme);
   }
 
   deleteSelectedElements() {
@@ -107,6 +113,8 @@ class HtmlArchitect {
     });
 
     this.selectedElements = [];
+
+    this.saveScheme();
   }
 
   deleteSchemeElementById(id) {
@@ -126,5 +134,71 @@ class HtmlArchitect {
     });
 
     idsToDelete.forEach((id) => this.deleteSchemeElementById(id));
+  }
+
+  saveScheme() {
+    window.localStorage.setItem(
+      schemeLocalStorageKey,
+      JSON.stringify(this.scheme),
+    );
+  }
+
+  loadScheme() {
+    const loadedScheme = JSON.parse(
+      window.localStorage.getItem(schemeLocalStorageKey),
+    );
+
+    if (!loadedScheme?.length) {
+      return;
+    }
+
+    this.loadChildren(loadedScheme, 0);
+  }
+
+  /** Loads specified element into HTML DOM from scheme. */
+  loadElement(loadedScheme, item) {
+    const { id, tag, style, parentId } = item;
+
+    console.log("RUN", this.scheme);
+
+    // Avoid adding the same element several times.
+    if (this.scheme.find((item) => item.id === id)) {
+      console.log("DUPLICATE", item);
+      return;
+    }
+
+    const element = document.createElement(tag);
+
+    element.id = id;
+    this.id = id;
+
+    console.log("ITEM", item);
+
+    Object.assign(element.style, style);
+
+    element.addEventListener("click", (event) => {
+      this.processClick(element);
+      event.stopPropagation();
+    });
+
+    const preparedParentId = !parentId ? rootId : parentId.toString();
+
+    const parent = document.getElementById(preparedParentId);
+
+    parent.appendChild(element);
+
+    this.scheme.push(item);
+
+    this.loadChildren(loadedScheme, id);
+  }
+
+  /** Loads children for specified parent. */
+  loadChildren(loadedScheme, parentId) {
+    loadedScheme.forEach((item) => {
+      if (item.parentId === parentId) {
+        // Load element for all the child elements of this parent.
+        this.loadElement(loadedScheme, item);
+      }
+    });
   }
 }
