@@ -37,7 +37,7 @@ class HtmlArchitect {
       });
 
       el.innerText = innerText;
-      el.style.fontSize = "12px";
+      el.style.fontSize = "16px";
 
       console.log("SELECTED ELEMENT", schemeEl.style);
     } else {
