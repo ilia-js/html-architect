@@ -80,11 +80,16 @@ class App {
         label: config.label,
       },
 
-      (val) => {
+      (event) => {
         const selectedElements = this.htmlArchitect.selectedElements;
 
         selectedElements.forEach((item) => {
-          item.style[config.name] = val.target.value;
+          item.style[config.name] = event.target.value;
+          this.htmlArchitect.updateSchemeElementStyle(
+            Number(item.id),
+            config.name,
+            event.target.value,
+          );
         });
       },
     );
@@ -111,6 +116,11 @@ class App {
 
         selectedElements.forEach((item) => {
           item.style[config.name] = event.target.value;
+          this.htmlArchitect.updateSchemeElementStyle(
+            Number(item.id),
+            config.name,
+            event.target.value,
+          );
         });
       },
     );

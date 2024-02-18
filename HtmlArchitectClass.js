@@ -3,11 +3,12 @@ class HtmlArchitect {
   id = 0;
   root = undefined;
   scheme = [];
+  loadingScheme = [];
 
   constructor() {
     this.root = document.getElementById(rootId);
     this.loadScheme();
-    console.log("LOADED SCHEME", this.scheme);
+    console.log("SCHEME LOADED", this.scheme);
   }
 
   processClick(el) {
@@ -25,9 +26,24 @@ class HtmlArchitect {
     if (findIndex === -1) {
       el.style.border = selectionBorderStyle;
       this.selectedElements.push(el);
+
+      // TODO Refactor - move this code to dedicated method.
+      const schemeEl = this.scheme.find((item) => item.id === Number(el.id));
+
+      let innerText = "";
+
+      Object.entries(schemeEl.style).forEach(([key, value]) => {
+        innerText += `${key}: ${value}\n`;
+      });
+
+      el.innerText = innerText;
+      el.style.fontSize = "12px";
+
+      console.log("SELECTED ELEMENT", schemeEl.style);
     } else {
       this.selectedElements[findIndex].style.border = defaultBoxBorder;
       this.selectedElements.splice(findIndex, 1);
+      this.selectedElements[findIndex].innerText = "";
     }
   }
 
@@ -105,6 +121,7 @@ class HtmlArchitect {
     this.scheme.push(schemeEl);
   }
 
+  /** Deletes elements from DOM and scheme which were selected */
   deleteSelectedElements() {
     this.selectedElements.forEach((item) => {
       this.deleteSchemeElementById(item.id);
@@ -122,6 +139,7 @@ class HtmlArchitect {
     this.scheme.splice(index, 1);
   }
 
+  /** Deletes all the items in scheme which matches the parentId */
   deleteAllSchemeChildren(parentId) {
     parentId = Number(parentId);
 
@@ -136,30 +154,29 @@ class HtmlArchitect {
     idsToDelete.forEach((id) => this.deleteSchemeElementById(id));
   }
 
+  /** Saves the scheme to local storage. */
   saveScheme() {
     window.localStorage.setItem(
       schemeLocalStorageKey,
       JSON.stringify(this.scheme),
     );
+
+    console.log("SCHEME SAVED", this.scheme);
   }
 
+  /** Loads scheme from local storage */
   loadScheme() {
-    const loadedScheme = JSON.parse(
-      window.localStorage.getItem(schemeLocalStorageKey),
-    );
+    this.loadingScheme =
+      JSON.parse(window.localStorage.getItem(schemeLocalStorageKey)) ?? [];
 
-    if (!loadedScheme?.length) {
-      return;
-    }
+    console.log("SCHEME TO LOAD", this.loadingScheme);
 
-    this.loadChildren(loadedScheme, 0);
+    this.loadChildren(0);
   }
 
-  /** Loads specified element into HTML DOM from scheme. */
-  loadElement(loadedScheme, item) {
+  /** Loads specified element into HTML DOM from saved scheme. */
+  loadElement(item) {
     const { id, tag, style, parentId } = item;
-
-    console.log("RUN", this.scheme);
 
     // Avoid adding the same element several times.
     if (this.scheme.find((item) => item.id === id)) {
@@ -170,7 +187,10 @@ class HtmlArchitect {
     const element = document.createElement(tag);
 
     element.id = id;
-    this.id = id;
+
+    if (id > this.id) {
+      this.id = id;
+    }
 
     console.log("ITEM", item);
 
@@ -189,15 +209,23 @@ class HtmlArchitect {
 
     this.scheme.push(item);
 
-    this.loadChildren(loadedScheme, id);
+    this.loadChildren(id);
   }
 
-  /** Loads children for specified parent. */
-  loadChildren(loadedScheme, parentId) {
-    loadedScheme.forEach((item) => {
+  /** Updates style of element in scheme */
+  updateSchemeElementStyle(id, name, value) {
+    console.log("UPDATE SCHEME ELEMENT", id, name, value);
+    const element = this.scheme.find((item) => item.id === id);
+    element.style[name] = value;
+    this.saveScheme();
+  }
+
+  /** Loads children for specified parent from saved scheme. */
+  loadChildren(parentId) {
+    this.loadingScheme.forEach((item) => {
       if (item.parentId === parentId) {
         // Load element for all the child elements of this parent.
-        this.loadElement(loadedScheme, item);
+        this.loadElement(item);
       }
     });
   }
