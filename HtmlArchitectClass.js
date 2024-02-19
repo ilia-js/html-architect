@@ -1,8 +1,15 @@
 class HtmlArchitect {
   selectedElements = [];
   id = 0;
-  root = document.getElementById(rootId);
+  root = undefined;
   scheme = [];
+  loadingScheme = [];
+
+  constructor() {
+    this.root = document.getElementById(rootId);
+    this.loadScheme();
+    console.log("SCHEME LOADED", this.scheme);
+  }
 
   processClick(el) {
     // TODO: Let's use it but from element's panel.
@@ -19,9 +26,24 @@ class HtmlArchitect {
     if (findIndex === -1) {
       el.style.border = selectionBorderStyle;
       this.selectedElements.push(el);
+
+      // TODO Refactor - move this code to dedicated method.
+      const schemeEl = this.scheme.find((item) => item.id === Number(el.id));
+
+      let innerText = "";
+
+      Object.entries(schemeEl.style).forEach(([key, value]) => {
+        innerText += `${key}: ${value}\n`;
+      });
+
+      el.innerText = innerText;
+      el.style.fontSize = "16px";
+
+      console.log("SELECTED ELEMENT", schemeEl.style);
     } else {
       this.selectedElements[findIndex].style.border = defaultBoxBorder;
       this.selectedElements.splice(findIndex, 1);
+      this.selectedElements[findIndex].innerText = "";
     }
   }
 
@@ -41,6 +63,8 @@ class HtmlArchitect {
     parents.forEach((parent) => {
       this.createElement(parent);
     });
+
+    this.saveScheme();
   }
 
   createElement(parent) {
@@ -72,13 +96,13 @@ class HtmlArchitect {
       overflow: "auto",
     };
 
-    Object.assign(box.style, style);
-
     // TODO HARDCODE!!!
     if (this.selectedElements.length) {
-      box.style.width = "30px";
-      box.style.height = "30px";
+      style.width = "30px";
+      style.height = "30px";
     }
+
+    Object.assign(box.style, style);
 
     parent.appendChild(box);
 
@@ -95,10 +119,9 @@ class HtmlArchitect {
     };
 
     this.scheme.push(schemeEl);
-
-    console.log(this.scheme);
   }
 
+  /** Deletes elements from DOM and scheme which were selected */
   deleteSelectedElements() {
     this.selectedElements.forEach((item) => {
       this.deleteSchemeElementById(item.id);
@@ -107,6 +130,8 @@ class HtmlArchitect {
     });
 
     this.selectedElements = [];
+
+    this.saveScheme();
   }
 
   deleteSchemeElementById(id) {
@@ -114,6 +139,7 @@ class HtmlArchitect {
     this.scheme.splice(index, 1);
   }
 
+  /** Deletes all the items in scheme which matches the parentId */
   deleteAllSchemeChildren(parentId) {
     parentId = Number(parentId);
 
@@ -126,5 +152,81 @@ class HtmlArchitect {
     });
 
     idsToDelete.forEach((id) => this.deleteSchemeElementById(id));
+  }
+
+  /** Saves the scheme to local storage. */
+  saveScheme() {
+    window.localStorage.setItem(
+      schemeLocalStorageKey,
+      JSON.stringify(this.scheme),
+    );
+
+    console.log("SCHEME SAVED", this.scheme);
+  }
+
+  /** Loads scheme from local storage */
+  loadScheme() {
+    this.loadingScheme =
+      JSON.parse(window.localStorage.getItem(schemeLocalStorageKey)) ?? [];
+
+    console.log("SCHEME TO LOAD", this.loadingScheme);
+
+    this.loadChildren(0);
+  }
+
+  /** Loads specified element into HTML DOM from saved scheme. */
+  loadElement(item) {
+    const { id, tag, style, parentId } = item;
+
+    // Avoid adding the same element several times.
+    if (this.scheme.find((item) => item.id === id)) {
+      console.log("DUPLICATE", item);
+      return;
+    }
+
+    const element = document.createElement(tag);
+
+    element.id = id;
+
+    if (id > this.id) {
+      this.id = id;
+    }
+
+    console.log("ITEM", item);
+
+    Object.assign(element.style, style);
+
+    element.addEventListener("click", (event) => {
+      this.processClick(element);
+      event.stopPropagation();
+    });
+
+    const preparedParentId = !parentId ? rootId : parentId.toString();
+
+    const parent = document.getElementById(preparedParentId);
+
+    parent.appendChild(element);
+
+    this.scheme.push(item);
+
+    this.loadChildren(id);
+  }
+
+  /** Updates style of element in scheme */
+  updateSchemeElementStyle(id, name, value) {
+    console.log("UPDATE SCHEME ELEMENT", id, name, value);
+    const element = this.scheme.find((item) => item.id === id);
+    element.style[name] = value;
+    this.saveScheme();
+  }
+
+  /** Loads children for specified parent from saved scheme. */
+  loadChildren(parentId) {
+    this.loadingScheme.forEach((item) => {
+      if (item.parentId === parentId) {
+        // Load element for all the child elements of this parent.
+        this.loadElement(item);
+      }
+    });
   }
 }

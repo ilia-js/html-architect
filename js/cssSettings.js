@@ -25,4 +25,8 @@ const cssSettings = {
     type: cssSettingType.inputText,
     label: "Margin Left",
   },
+  marginTop: {
+    type: cssSettingType.inputText,
+    label: "Margin Top",
+  },
 };

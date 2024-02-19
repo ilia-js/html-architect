@@ -29,13 +29,13 @@ class App {
     this.addFields();
   }
 
-  addButtonCreate(event) {
+  addButtonCreate() {
     const button = this.html.createButton(
       { text: "Create HTML Element", color: "green" },
       (event) => {
         this.htmlArchitect.createElements();
         event.stopPropagation();
-      }
+      },
     );
 
     this.toolsLeft.appendChild(button);
@@ -47,7 +47,7 @@ class App {
       (event) => {
         this.htmlArchitect.deleteSelectedElements();
         event.stopPropagation();
-      }
+      },
     );
 
     this.toolsLeft.appendChild(button);
@@ -55,7 +55,6 @@ class App {
 
   addFields() {
     Object.entries(cssSettings).forEach(([name, value]) => {
-      console.log(name, value);
       if (value.type === cssSettingType.inputText) {
         this.addInputField({
           name,
@@ -81,13 +80,18 @@ class App {
         label: config.label,
       },
 
-      (val) => {
+      (event) => {
         const selectedElements = this.htmlArchitect.selectedElements;
 
         selectedElements.forEach((item) => {
-          item.style[config.name] = val.target.value;
+          item.style[config.name] = event.target.value;
+          this.htmlArchitect.updateSchemeElementStyle(
+            Number(item.id),
+            config.name,
+            event.target.value,
+          );
         });
-      }
+      },
     );
 
     this.toolsRight.appendChild(input);
@@ -112,8 +116,13 @@ class App {
 
         selectedElements.forEach((item) => {
           item.style[config.name] = event.target.value;
+          this.htmlArchitect.updateSchemeElementStyle(
+            Number(item.id),
+            config.name,
+            event.target.value,
+          );
         });
-      }
+      },
     );
 
     this.toolsRight.appendChild(field);
